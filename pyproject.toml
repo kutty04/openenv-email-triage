@@ -7,11 +7,15 @@ name = "email-triage-openenv"
 version = "1.0.0"
 description = "Email Triage OpenEnv environment for AI agent training"
 requires-python = ">=3.10"
+dependencies = [
+    "openenv-core>=0.2.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.23.0",
+    "pydantic>=2.0.0",
+]
+
+[project.scripts]
+server = "app:app"
 
 [tool.openenv]
 entry_point = "app:app"
-tasks = [
-    "task_1_spam_detection",
-    "task_2_priority_triage",
-    "task_3_reply_drafting"
-]
