@@ -1,13 +1,13 @@
-import uvicorn
-import sys
-import os
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends.legacy:build"
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+[project]
+name = "email-triage-openenv"
+version = "1.0.0"
+description = "Email Triage OpenEnv"
+requires-python = ">=3.10"
+dependencies = ["openenv-core>=0.2.0", "fastapi>=0.100.0", "uvicorn>=0.23.0", "pydantic>=2.0.0"]
 
-from app import app
-
-def main():
-    uvicorn.run(app, host="0.0.0.0", port=7860)
-
-if __name__ == "__main__":
-    main()
+[project.scripts]
+server = "server.app:main"
