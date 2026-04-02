@@ -1,0 +1,114 @@
+name: email-triage-env
+version: 1.0.0
+description: >
+  An OpenEnv environment that simulates real-world email inbox management.
+  AI agents must classify spam, prioritize emails by urgency, and draft
+  professional reply summaries — core tasks performed by millions of workers daily.
+
+tags:
+  - openenv
+  - email
+  - triage
+  - classification
+  - nlp
+  - real-world
+
+author: openenv-hackathon-submission
+license: MIT
+
+tasks:
+  - id: task_1_spam_detection
+    name: "Spam Detection"
+    difficulty: easy
+    num_steps: 10
+    score_range: [0.0, 1.0]
+    description: "Classify each email as spam or not_spam"
+
+  - id: task_2_priority_triage
+    name: "Priority Triage"
+    difficulty: medium
+    num_steps: 10
+    score_range: [0.0, 1.0]
+    description: "Assign priority 1-5 to each email based on urgency"
+
+  - id: task_3_reply_drafting
+    name: "Reply Drafting"
+    difficulty: hard
+    num_steps: 5
+    score_range: [0.0, 1.0]
+    description: "Write a professional one-sentence reply summary for each email"
+
+observation_space:
+  type: object
+  fields:
+    current_email:
+      type: object
+      fields:
+        id: string
+        subject: string
+        sender: string
+        body: string
+        timestamp: string
+    emails_remaining: integer
+    emails_processed: integer
+    last_action_feedback: string
+    task_id: string
+    task_description: string
+
+action_space:
+  type: object
+  fields:
+    action_type:
+      type: enum
+      values: [classify, prioritize, reply, skip]
+    email_id:
+      type: string
+      description: "ID of the email to act on"
+    label:
+      type: enum
+      values: [spam, not_spam, urgent, normal, low]
+      required_for: classify
+    priority:
+      type: integer
+      range: [1, 5]
+      required_for: prioritize
+    reply_summary:
+      type: string
+      required_for: reply
+
+reward_space:
+  type: object
+  fields:
+    score:
+      type: float
+      range: [0.0, 1.0]
+      description: "Per-step reward"
+    cumulative_score:
+      type: float
+      range: [0.0, 1.0]
+      description: "Running average score across episode"
+    reason:
+      type: string
+      description: "Human-readable explanation of reward"
+
+endpoints:
+  reset: POST /reset
+  step: POST /step
+  state: GET /state
+  tasks: GET /tasks
+  grader: GET /grader
+  baseline: POST /baseline
+  health: GET /health
+
+baseline:
+  model: gpt-4o-mini
+  scores:
+    task_1_spam_detection: 0.80
+    task_2_priority_triage: 0.65
+    task_3_reply_drafting: 0.55
+  mean: 0.67
+
+docker:
+  build: "docker build -t email-triage-env ."
+  run: "docker run -p 7860:7860 email-triage-env"
+  port: 7860
